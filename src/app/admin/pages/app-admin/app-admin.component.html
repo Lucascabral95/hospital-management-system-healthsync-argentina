@@ -1,0 +1,64 @@
+<section class="w-full">
+  <div class="flex flex-col justify-center mb-6 sm:mb-8">
+    <h2 class="text-2xl font-bold m-0 p-0">
+      Bienvenido/a de nuevo, {{ name()?.full_name }}
+    </h2>
+    <p class="text-gray-500 text-base mt-1">
+      El panel está listo con la información más reciente.
+    </p>
+    <p class="text-gray-500 text-base">¿Qué te gustaría revisar hoy?</p>
+  </div>
+
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 m-0 mb-2 sm:m-4">
+    @for (section of sections; track $index) {
+    <div
+      class="rounded-xl shadow p-5 flex flex-col gap-2 cursor-pointer transition-colors duration-200 hover:bg-base-200"
+      routerLinkActive="bg-base-200"
+    >
+      <a [routerLink]="section.route">
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-100 rounded-lg p-2">
+            <i class="{{ section.icon }} text-blue-600 text-xl"></i>
+          </div>
+          <span class="text-secondary text-sm font-medium"
+            >Total de {{ section.subLabel }}
+          </span>
+        </div>
+        <div class="flex items-end justify-between">
+          <span
+            class="text-2xl sm:text-3xl mt-1 sm:mt-0 font-bold text-secondary"
+          >
+            @if ( section.subLabel == 'doctores' ) {
+            {{ resCount.error() ? "⚠️" : dataAllResource().totalDoctors }}
+            }
+            <!-- --- -->
+            @else if ( section.subLabel == 'pacientes' ) {
+            {{ resCount.error() ? "⚠️" : dataAllResource().totalPatients }}
+            }
+            <!-- ---- -->
+            @else if ( section.subLabel == 'internación' ) {
+            {{ resCount.error() ? "⚠️" : dataAllResource().totalInterments }}
+            }
+            <!-- --- -->
+            @else if ( section.subLabel == 'citas médicas' ) {
+            {{ resCount.error() ? "⚠️" : dataAllResource().totalAppointments }}
+            }
+          </span>
+          <span
+            class="text-xs text-green-500 flex items-center gap-1"
+            [class.text-red-500]="resCount.error()"
+          >
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11V7a1 1 0 10-2 0v2a1 1 0 001 1h2a1 1 0 100-2h-1z"
+              />
+            </svg>
+            {{ resCount.error() ? "Offline" : "Online" }}
+          </span>
+        </div>
+      </a>
+    </div>
+    }
+  </div>
+  <router-outlet />
+</section>

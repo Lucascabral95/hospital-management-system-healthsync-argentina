@@ -1,0 +1,76 @@
+<section class="flex flex-col">
+  <div class="flex flex-col sm:flex-row justify-between items-center mt-4">
+    <label class="input w-full sm:w-80">
+      <svg
+        class="h-[1em] opacity-50"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+      >
+        <g
+          stroke-linejoin="round"
+          stroke-linecap="round"
+          stroke-width="2.5"
+          fill="none"
+          stroke="currentColor"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </g>
+      </svg>
+      <input
+        type="search"
+        class="grow"
+        placeholder="Buscar..."
+        #txt
+        (input)="searchInput.emit(txt.value)"
+      />
+      <kbd class="kbd kbd-sm">⌘</kbd>
+      <kbd class="kbd kbd-sm">K</kbd>
+    </label>
+    <div class="hs-dropdown relative inline-flex w-full sm:w-64 mt-3 sm:mt-0">
+      <select class="select select-primary w-full" (change)="onChange($event)">
+        <option disabled selected>Todos</option>
+        @for (sort of sorted() ?? []; track $index) {
+        <option>{{ sort }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div
+    class="mt-4 overflow-x-auto rounded-box border border-base-content/5 bg-base-100"
+  >
+    <table class="table">
+      <thead>
+        <tr>
+          @for (column of columnsPatients() ?? []; track $index) {
+          <th>{{ column }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (patient of patients() ?? []; track $index) {
+        <tr>
+          <th>
+            <a
+              class="w-fit cursor-pointer hover:text-primary hover:underline"
+              [routerLink]="['/patients/detail']"
+              [queryParams]="{ id: patient.id }"
+            >
+              {{ patient.name }} {{ patient.last_name }}
+            </a>
+          </th>
+          <td>{{ patient.dni }}</td>
+          <td>{{ patient.phone }}</td>
+          <td>{{ patient.email }}</td>
+          <td>{{ patient.date_born }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <pagination-component
+    [currentPage]="currentPage()"
+    [quantityPages]="quantityPages()"
+  />
+</section>

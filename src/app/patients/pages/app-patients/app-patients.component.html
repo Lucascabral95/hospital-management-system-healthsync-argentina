@@ -1,0 +1,31 @@
+@if ( patientsArray.isLoading() ) {
+<div class="flex justify-center p-8">
+  <span class="loading loading-spinner loading-lg text-primary"></span>
+</div>
+} @else if( patientsArray.error() ) {
+<error-request-component [messageInterno]="true" />
+} @else if(patientsArray.hasValue()) {
+
+<div class="w-full flex justify-center items-center mt-6 mb-2 sm:mt-4 sm:mb-0">
+  <button (click)="isOpenModal.set(true)" class="btn btn-primary">
+    Crear paciente
+  </button>
+</div>
+
+<app-table-patients
+  [currentPage]="page() ?? 1"
+  [quantityPages]="quantityPages() ?? 1"
+  (searchInput)="onSearch($event)"
+  (filter)="onFilter($event)"
+  [columnsPatients]="columnsPatients()"
+  [patients]="filtered()"
+/>
+
+<!-- ---- -->
+@if ( isOpenModal() ) {
+<modal-create-patients-component (close)="isOpenModal.set($event)" />
+}
+<!-- ---- -->
+} @else {
+<p>No se encontraron pacientes</p>
+}

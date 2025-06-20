@@ -1,0 +1,17 @@
+<div class="w-full flex justify-center items-center my-4">
+  <div class="join">
+    @for (page of arrayPages(); track $index) {
+    <!-- <a [routerLink]="['/admin/patients']" [queryParams]="{ page: page }"> -->
+    <a [routerLink]="[getRoute()]" [queryParams]="{ page: page }">
+      <input
+        class="join-item btn btn-square"
+        type="radio"
+        name="options"
+        [value]="page"
+        [attr.aria-label]="page"
+        [checked]="page === currentPage()"
+      />
+    </a>
+    }
+  </div>
+</div>

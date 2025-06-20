@@ -1,0 +1,70 @@
+@if ( messageInterno() ) {
+<div
+  class="fixed px-3 sm:px-0 top-10 sm:top-19 left-0 w-full z-50 flex justify-center items-start pointer-events-none"
+>
+  <div
+    class="mt-8 bg-error text-error-content rounded-xl shadow-lg px-6 py-4 flex flex-col md:flex-row items-center gap-4 max-w-xl w-full pointer-events-auto"
+    role="alert"
+    aria-live="assertive"
+  >
+    <svg
+      class="w-8 h-8 text-error-content shrink-0"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+    >
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M12 8v4m0 4h.01"
+      />
+    </svg>
+    <div class="flex-1">
+      <span class="font-semibold block text-center sm:text-start"
+        >Sin sistema</span
+      >
+      <span class="block text-sm mt-1">
+        Ocurrió un error inesperado. Por favor, comunícate con el administrador
+        <span class="font-medium">Lucas Cabral</span> por
+        <a class="underline hover:text-primary transition-colors">
+          error 500
+        </a>
+      </span>
+    </div>
+  </div>
+</div>
+}
+
+<div class="grid place-items-center px-6 py-24 sm:py-32 lg:px-8">
+  <div class="text-center">
+    <p class="text-2xl font-semibold text-indigo-600">500</p>
+    <h3
+      class="mt-4 font-semibold tracking-tight text-balance text-accent text-4xl sm:text-5xl"
+    >
+      @if ( messageErrorRequest() ) {
+      {{ messageErrorRequest() }}
+      } @else {
+      {{ !messageInterno() ? "Not found" : "Sin sistema" }}
+      }
+    </h3>
+    <p
+      class="font-medium text-pretty text-gray-500 text-lg sm:text-xl/8 mt-4 mb-6 sm:mt-6 sm:mb-10"
+    >
+      {{
+        message() ??
+          "Perdón, los recursos que buscás no se encuentran disponibles."
+      }}
+    </p>
+    @if (!messageInterno()) {
+    <div class="flex items-center justify-center gap-x-6">
+      <a
+        [routerLink]="['/patients']"
+        class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >Volver al inicio</a
+      >
+    </div>
+    }
+  </div>
+</div>

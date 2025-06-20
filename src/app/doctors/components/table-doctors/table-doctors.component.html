@@ -1,0 +1,213 @@
+<section class="flex flex-col">
+  <div class="w-full flex justify-center items center mt-3 sm:my-1">
+    <button
+      class="btn btn-primary btn-sm sm:btn-md"
+      (click)="openModalCreate.set(true)"
+    >
+      Crear doctor/admin
+    </button>
+  </div>
+  <div
+    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mt-4"
+  >
+    <label class="input w-full sm:w-auto">
+      <svg
+        class="h-[1em] opacity-50"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+      >
+        <g
+          stroke-linejoin="round"
+          stroke-linecap="round"
+          stroke-width="2.5"
+          fill="none"
+          stroke="currentColor"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </g>
+      </svg>
+      <input
+        type="search"
+        class="grow"
+        placeholder="Buscar..."
+        #txt
+        (input)="searchInput.emit(txt.value)"
+      />
+      <kbd class="kbd kbd-sm hidden sm:inline">⌘</kbd>
+      <kbd class="kbd kbd-sm hidden sm:inline">K</kbd>
+    </label>
+    <div class="hs-dropdown relative inline-flex w-full sm:w-auto">
+      <select
+        class="select select-primary w-full sm:w-auto"
+        (change)="onChange($event)"
+      >
+        <option disabled selected>Todos</option>
+        @for (sort of sortOrder() ?? []; track $index) {
+        <option>{{ sort }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div
+    class="mt-4 overflow-x-auto rounded-box border border-base-content/5 bg-base-100 hidden sm:block"
+  >
+    <table class="table">
+      <thead>
+        <tr>
+          @for (column of columsDoctors() ?? []; track $index) {
+          <th>{{ column }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (patient of doctors() ?? []; track $index) {
+        <tr>
+          <th>
+            <a
+              [routerLink]="['/doctors/detail']"
+              [queryParams]="{ id: patient.id }"
+              class="w-fit cursor-pointer hover:text-primary hover:underline"
+            >
+              {{ patient.full_name }}
+            </a>
+          </th>
+          <td>{{ patient.role }}</td>
+          <td>
+            <div
+              class="badge badge-sm"
+              [class.badge-success]="patient.is_active"
+              [class.badge-error]="!patient.is_active"
+            >
+              {{ patient.is_active ? "Activo" : "Inactivo" }}
+            </div>
+          </td>
+          @if (patient.role === 'DOCTOR') {
+          <!-- --- -->
+          @if ( patient.Doctor[0]?.specialty ) {
+          <td [class.text-red-500]="!patient.Doctor[0]?.specialty">
+            {{ patient.Doctor[0]?.specialty }}
+          </td>
+
+          }
+          <!-- --- -->
+          @else {
+          <td [class.text-red-500]="!patient.Doctor[0]?.specialty">
+            <button
+              (click)="
+                openModalCreateProfileDoctor.set(true);
+                idDoctorForCreateProfile.set(patient.id)
+              "
+              class="btn btn-error btn-sm"
+            >
+              Completar perfil
+            </button>
+          </td>
+
+          } }
+          <!-- --- -->
+          @else {
+          <td [class.text-red-500]="!patient.Doctor[0]?.specialty">
+            Sin especialidad
+          </td>
+          } @if (patient.role === 'DOCTOR') {
+          <td [class.text-red-500]="!patient.Doctor[0]?.licenceNumber">
+            {{ patient.Doctor[0]?.licenceNumber ?? "Sin licencia" }}
+          </td>
+          } @else {
+          <td [class.text-red-500]="!patient.Doctor[0]?.licenceNumber">
+            Sin licencia
+          </td>
+          }
+          <td class="flex items-center">
+            <div class="flex space-x-2 items-center">
+              <button
+                class="btn btn-xs btn-circle bg-gradient-to-br from-[#00ff99] to-[#006666] border-none shadow-md hover:scale-110 transition-transform duration-150 flex items-center justify-center"
+                title="Editar"
+                (click)="openModalPatch(patient.id)"
+              >
+                <i class="fa-solid fa-pen text-black text-xs"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4 sm:hidden space-y-4">
+    @for (patient of doctors() ?? []; track $index) {
+    <div class="card bg-base-100 shadow-sm border border-base-content/5">
+      <div class="card-body p-4">
+        <div class="flex justify-between items-start">
+          <a
+            [routerLink]="['/doctors/detail']"
+            [queryParams]="{ id: patient.id }"
+            class="card-title text-base hover:text-primary hover:underline"
+          >
+            {{ patient.full_name }}
+          </a>
+          <div
+            class="badge badge-sm"
+            [class.badge-success]="patient.is_active"
+            [class.badge-error]="!patient.is_active"
+          >
+            {{ patient.is_active ? "Activo" : "Inactivo" }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+          <div class="flex flex-col">
+            <span class="font-semibold text-xs opacity-70">Rol</span>
+            <span>{{ patient.role }}</span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="font-semibold text-xs opacity-70">Especialidad</span>
+            <span [class.text-red-500]="!patient.Doctor[0]?.specialty">
+              {{ patient.Doctor[0]?.specialty ?? "Completar perfil" }}
+            </span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="font-semibold text-xs opacity-70">Licencia</span>
+            <span [class.text-red-500]="!patient.Doctor[0]?.licenceNumber">
+              {{ patient.Doctor[0]?.licenceNumber ?? "Sin licencia" }}
+            </span>
+          </div>
+        </div>
+
+        <div class="card-actions justify-end mt-2">
+          <button
+            class="btn btn-xs btn-circle bg-gradient-to-br from-[#00ff99] to-[#006666] border-none shadow-md hover:scale-110 transition-transform duration-150 flex items-center justify-center"
+            title="Editar"
+            (click)="openModalPatch(patient.id)"
+          >
+            <i class="fa-solid fa-pen text-black text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if (isOpenModal()) {
+  <modal-patch-doctor-component
+    [isIDDoctor]="iDDoctorForUpdate()"
+    (close)="isOpenModal.set($event)"
+  />
+  }
+  <!-- --- -->
+  @if (openModalCreate()) {
+  <modal-create-doctor (close)="openModalCreate.set($event)" />
+  }
+  <!--  modal create profile doctor --- -->
+  @if ( openModalCreateProfileDoctor() ) {
+  <modal-create-profile-doctor-component
+    [doctorID]="idDoctorForCreateProfile()"
+    (close)="openModalCreateProfileDoctor.set($event)"
+  />
+  }
+</section>

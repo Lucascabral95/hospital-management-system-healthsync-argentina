@@ -1,0 +1,27 @@
+<section class="w-full flex flex-col">
+  @if (loadingMedicalRecords()) {
+  <p>Cargando...</p>
+  }
+  <!-- ---- -->
+  @else if ( medicalErrors() ) {
+  <error-component-medical-records
+    [medicalErrors]="medicalErrors()!.error.message ?? 'Error desconocido'"
+    [medicalMessage]="
+      'Ocurrió un error al cargar los registros médicos del paciente'
+    "
+  />
+  }
+  <!-- ---- -->
+  @else {
+  <!-- ---- -->
+  <app-body-detail-component
+    [title]="'Historial de diagnósticos del paciente'"
+    [medicalRecordsForPatient]="patientsFiltered()"
+    [doctorOrPatient]="'patient'"
+    (sortedDiagnosis)="sortedDiagnosis.set($event)"
+    (inputSearch)="onSearchInput($event)"
+  />
+  <!-- ---- -->
+  }
+  <!-- --- -->
+</section>

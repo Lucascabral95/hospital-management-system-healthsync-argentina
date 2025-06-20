@@ -1,0 +1,203 @@
+@if (loading()) {
+<p>Cargando...</p>
+} @else if ( errorRequest() ) {
+<error-request-component
+  [message]="errorRequest()!.error.message ?? 'Error desconocido'"
+/>
+} @else {
+
+<section class="w-full flex flex-col">
+  <div class="w-full pt-0 pb-4 px-2 sm:p-4 rounded-2xl">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center">
+        <h1 class="text-xl sm:text-2xl font-medium mb-2 sm:mb-4">
+          Información personal
+        </h1>
+      </div>
+      <div
+        [class.hidden]="rolePersonal() === 'DOCTOR'"
+        class="flex items-center"
+        (click)="isOpenModal.set(true)"
+      >
+        <button class="btn btn-primary hidden sm:block">Editar datos</button>
+        <button class="btn btn-primary btn-xs block sm:hidden">
+          <i class="fa-solid fa-pen"> </i>
+        </button>
+      </div>
+    </div>
+    <div class="flex mt-4 mb-6 sm:mb-8">
+      <div
+        class="w-16 h-16 sm:w-20 sm:h-20 flex justify-center items-center rounded-full border border-primary"
+      >
+        <i class="fa-solid fa-user text-xl sm:text-2xl text-primary"></i>
+      </div>
+      <div class="flex flex-col justify-center ml-2 sm:ml-3">
+        <p class="text-xl sm:text-2xl font-bold text-base-content">
+          Paciente {{ patientsDetails()?.name }}
+          {{ patientsDetails()?.last_name }}
+        </p>
+        <div class="badge badge-primary badge-sm mt-1">
+          DNI {{ patientsDetails()?.dni }}
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <form class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-6 mb-4">
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-id-card mr-2"></i>Nombre completo
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.name + ' ' + patientsDetails()?.last_name"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-id-card mr-2"></i>DNI
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.dni"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-calendar-days mr-2"></i>Fecha de nacimiento
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.date_born"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-venus-mars mr-2"></i>Genero
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.gender"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-phone mr-2"></i>Numero de telefono
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.phone"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-envelope mr-2"></i>Email
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.email"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-house mr-2"></i>Calle
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.street"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-city mr-2"></i>Ciudad
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.city"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-map-location-dot mr-2"></i>Provincia
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.state"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-envelope mr-2"></i>Codigo postal
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.zip_code"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-flag mr-2"></i>Pais
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="patientsDetails()?.country"
+        />
+      </div>
+    </form>
+    <div class="divider"></div>
+  </div>
+
+  @if (isOpenModal()) {
+
+  <app-modal-patch-patients-component
+    [isIDPatient]="currentID()!"
+    (close)="isOpenModal.set($event)"
+  />
+  }
+
+  <medical-records-patients-component [patientId]="currentID()!" />
+</section>
+
+}

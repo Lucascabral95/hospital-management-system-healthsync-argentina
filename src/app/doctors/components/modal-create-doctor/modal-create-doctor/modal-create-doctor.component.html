@@ -1,0 +1,198 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+>
+  <div
+    class="w-full sm:w-[90%] md:w-[80%] lg:w-[70%] xl:w-[60%] max-w-4xl bg-base-200 rounded-2xl p-4 sm:p-6 shadow-xl animate-fade-in animate-duration-300 max-h-[90vh] overflow-y-auto"
+  >
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center">
+        <div class="w-1.5 h-8 bg-primary rounded-full mr-3"></div>
+        <h1 class="text-xl sm:text-2xl font-bold">Crear personal</h1>
+      </div>
+      <button
+        class="btn btn-circle btn-sm btn-ghost"
+        (click)="closeModal(false)"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <div class="form-control grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div class="control">
+          <label
+            for="full_name"
+            class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1.5 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            Nombre completo
+          </label>
+          <input
+            [class.input-error]="
+              myForm.get('full_name')?.invalid &&
+              myForm.get('full_name')?.touched
+            "
+            type="text"
+            class="input input-bordered w-full focus:border-primary"
+            formControlName="full_name"
+            placeholder="Ingrese nombre completo"
+          />
+        </div>
+        <div class="control">
+          <label
+            for="email"
+            class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1.5 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+            Email
+          </label>
+          <input
+            type="email"
+            class="input input-bordered w-full focus:border-primary"
+            formControlName="email"
+            placeholder="ejemplo@correo.com"
+            [class.input-error]="
+              myForm.get('email')?.invalid && myForm.get('email')?.touched
+            "
+            [class.input-error]="
+              errorRequest()?.message === 'User already exists'
+            "
+          />
+        </div>
+        <div class="control">
+          <label
+            for="role"
+            class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1.5 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 17v-2a4 4 0 014-4h3"
+              />
+            </svg>
+            Rol
+          </label>
+          <select
+            [class.select-error]="
+              myForm.get('role')?.invalid && myForm.get('role')?.touched
+            "
+            class="select select-bordered w-full focus:border-primary"
+            formControlName="role"
+          >
+            <option value="" disabled selected>Seleccioná tu rol</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="DOCTOR">DOCTOR</option>
+          </select>
+        </div>
+        <div class="control">
+          <label
+            for="password"
+            class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1.5 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            Contraseña
+          </label>
+          <input
+            [class.input-error]="
+              myForm.get('password')?.invalid && myForm.get('password')?.touched
+            "
+            type="password"
+            class="input input-bordered w-full focus:border-primary"
+            formControlName="password"
+            placeholder="Ingrese contraseña"
+          />
+        </div>
+      </div>
+      @if ( errorRequest() ) {
+      <div class="my-4">
+        <p class="text-center text-red-500 font-medium">
+          {{ errorRequest()!.message }}
+        </p>
+      </div>
+      }
+      <div class="flex justify-end mt-6">
+        <button
+          [class.hidden]="!loadingRequest()"
+          class="btn btn-success w-full"
+        >
+          <span class="loading loading-spinner"></span>
+        </button>
+        <button
+          class="btn btn-neutral mr-2"
+          (click)="closeModal(false)"
+          type="button"
+          [class.hidden]="loadingRequest()"
+        >
+          Cancelar
+        </button>
+        <button
+          [class.hidden]="loadingRequest()"
+          class="btn btn-primary"
+          type="submit"
+        >
+          Crear
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

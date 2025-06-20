@@ -1,0 +1,61 @@
+<div
+  class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100"
+>
+  <div class="flex justify-between items-center mt-4">
+    <label class="input">
+      <svg
+        class="h-[1em] opacity-50"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+      >
+        <g
+          stroke-linejoin="round"
+          stroke-linecap="round"
+          stroke-width="2.5"
+          fill="none"
+          stroke="currentColor"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </g>
+      </svg>
+      <input
+        type="search"
+        class="grow"
+        placeholder="Search"
+        #txt
+        (input)="searchInput.emit(txt.value)"
+      />
+      <kbd class="kbd kbd-sm">⌘</kbd>
+      <kbd class="kbd kbd-sm">K</kbd>
+    </label>
+    <div class="hs-dropdown relative inline-flex">
+      <select class="select select-primary">
+        <option disabled selected>Todos</option>
+        @for (sort of sortOrder() ?? []; track $index) {
+        <option>{{ sort }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        @for (column of columnsPatients() ?? []; track $index) {
+        <th>{{ column }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (patient of patients() ?? []; track $index) {
+      <tr>
+        <th>{{ patient.name }} {{ patient.last_name }}</th>
+        <td>{{ patient.dni }}</td>
+        <td>{{ patient.phone }}</td>
+        <td>{{ patient.email }}</td>
+        <td>{{ patient.date_born }}</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

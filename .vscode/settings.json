@@ -1,0 +1,10 @@
+{
+  "angular-schematics.schematicsDefaultOptions": {
+    "angular-*": {
+      "skipStyle": true,
+      "externalTemplate": true
+    }
+  },
+  "git.ignoreLimitWarning": true,
+  "CodeGPT.apiKey": "LM Studio"
+}

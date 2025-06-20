@@ -1,0 +1,266 @@
+<section class="w-full flex flex-col p-2 sm:p-4 md:p-6 animate-fade-in">
+  <div class="flex justify-between items-center mb-4 sm:mb-6">
+    <div class="flex items-center gap-2">
+      <div class="w-1 h-8 bg-primary rounded-full hidden sm:block"></div>
+      <h2 class="text-primary font-bold text-2xl sm:text-3xl">Citas médicas</h2>
+    </div>
+    <div class="flex gap-2">
+      <button
+        class="btn btn-sm sm:btn-md btn-ghost btn-circle"
+        title="Refrescar"
+      >
+        <i class="fa-solid fa-arrows-rotate text-primary"></i>
+      </button>
+      <button
+        class="btn btn-sm sm:btn-md btn-primary"
+        (click)="isOpenModalCreateAppointment.set(true)"
+      >
+        <i class="fa-solid fa-plus mr-1"></i>
+        <span class="hidden sm:inline">Nueva cita</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="stat bg-base-100 shadow-sm rounded-xl p-3">
+      <div class="stat-figure text-primary">
+        <i class="fa-solid fa-calendar-check text-xl sm:text-2xl"></i>
+      </div>
+      <div class="stat-title text-xs sm:text-sm">Pendientes</div>
+      <div class="stat-value text-lg sm:text-xl">
+        {{
+          appointmentService.socketError()
+            ? "⚠️ Offline "
+            : appointmentsPending().length
+        }}
+      </div>
+    </div>
+    <div class="stat bg-base-100 shadow-sm rounded-xl p-3">
+      <div class="stat-figure text-secondary">
+        <i class="fa-solid fa-stethoscope text-xl sm:text-2xl"></i>
+      </div>
+      <div class="stat-title text-xs sm:text-sm">En atención</div>
+      <div class="stat-value text-lg sm:text-xl">
+        {{
+          appointmentService.socketError()
+            ? "⚠️ Offline "
+            : appointmentsInProgress().length
+        }}
+      </div>
+    </div>
+    <div class="stat bg-base-100 shadow-sm rounded-xl p-3">
+      <div class="stat-figure text-success">
+        <i class="fa-solid fa-check-circle text-xl sm:text-2xl"></i>
+      </div>
+      <div class="stat-title text-xs sm:text-sm">Completadas</div>
+      <div class="stat-value text-lg sm:text-xl">
+        {{
+          appointmentService.socketError()
+            ? "⚠️ Offline "
+            : appointmentsCompleted().length
+        }}
+      </div>
+    </div>
+    <div class="stat bg-base-100 shadow-sm rounded-xl p-3">
+      <div class="stat-figure text-info">
+        <i class="fa-solid fa-users text-xl sm:text-2xl"></i>
+      </div>
+      <div class="stat-title text-xs sm:text-sm">Total</div>
+      <div class="stat-value text-lg sm:text-xl">
+        {{
+          appointmentService.socketError()
+            ? "⚠️ Offline "
+            : appointmentsPending().length +
+              appointmentsInProgress().length +
+              appointmentsCompleted().length
+        }}
+      </div>
+    </div>
+  </div>
+
+  @if ( appointmentService.socketError() ) {
+  <div class="my-4">
+    <error-request-component
+      messageErrorRequest="Error WebSocket"
+      [message]="appointmentService.socketError()"
+    />
+  </div>
+  }
+  <!-- ----- -->
+  @else {
+  <div
+    class="flex flex-col sm:flex-row justify-center items-center p-8 sm:p-12 m-4 bg-primary/5 rounded-xl"
+  >
+    <i
+      class="fa-solid fa-calendar-check text-4xl sm:text-6xl text-primary mr-4"
+    ></i>
+    <div>
+      <h2
+        class="text-xl sm:text-2xl font-bold text-primary my-1 sm:mb-1 sm:mt-1"
+      >
+        Último paciente llamado
+      </h2>
+      <p class="text-lg sm:text-xl text-primary text-center sm:text-start">
+        @if (appointmentsInProgress().length > 0) {
+        {{ appointmentsInProgress().at(-1)?.patient?.name || "" }}
+        {{ appointmentsInProgress().at(-1)?.patient?.last_name || "" }}
+        } @else { No hay pacientes en atención }
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+    <div
+      class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl overflow-hidden border border-base-200"
+    >
+      <div class="card-body p-0">
+        <div class="bg-gradient-to-r from-primary/10 to-primary/5 p-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-primary/20 p-2 rounded-lg">
+              <i class="fa-solid fa-calendar-check text-primary text-xl"></i>
+            </div>
+            <h2 class="card-title text-primary font-bold">Turnos pendientes</h2>
+          </div>
+        </div>
+
+        @if (loading()) {
+        <div class="flex justify-center items-center p-12">
+          <div class="flex flex-col items-center gap-3">
+            <span
+              class="loading loading-spinner loading-lg text-primary"
+            ></span>
+            <p class="text-sm text-base-content/70">Cargando citas...</p>
+          </div>
+        </div>
+        } @else if(errors()) {
+        <div class="p-4">
+          <error-request-component />
+        </div>
+        } @else if(appointmentsPending().length === 0) {
+        <div class="flex flex-col items-center justify-center p-12 text-center">
+          <div class="bg-base-200 p-4 rounded-full mb-4">
+            <i
+              class="fa-solid fa-calendar-xmark text-base-content/50 text-3xl"
+            ></i>
+          </div>
+          <h3 class="font-medium text-lg mb-2">No hay citas pendientes</h3>
+          <p class="text-base-content/70 max-w-md mb-4">
+            Todas las citas han sido atendidas o no hay citas programadas para
+            hoy.
+          </p>
+          <button
+            class="btn btn-primary btn-sm"
+            (click)="isOpenModalCreateAppointment.set(true)"
+          >
+            <i class="fa-solid fa-plus mr-1"></i>
+            Crear nueva cita
+          </button>
+        </div>
+        } @else {
+        <div class="p-4">
+          <app-table-appointment [appointments]="appointmentsPending()" />
+        </div>
+        }
+      </div>
+    </div>
+
+    <div
+      class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl overflow-hidden border border-base-200"
+    >
+      <div class="card-body p-0">
+        <div class="bg-gradient-to-r from-secondary/10 to-secondary/5 p-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-secondary/20 p-2 rounded-lg">
+              <i class="fa-solid fa-stethoscope text-secondary text-xl"></i>
+            </div>
+            <h2 class="card-title text-secondary font-bold">En atención</h2>
+          </div>
+        </div>
+
+        @if (loading()) {
+        <div class="flex justify-center items-center p-12">
+          <div class="flex flex-col items-center gap-3">
+            <span
+              class="loading loading-spinner loading-lg text-secondary"
+            ></span>
+            <p class="text-sm text-base-content/70">Cargando citas...</p>
+          </div>
+        </div>
+        } @else if(errors()) {
+        <div class="p-4">
+          <error-request-component />
+        </div>
+        } @else if(appointmentsInProgress().length === 0) {
+        <div class="flex flex-col items-center justify-center p-12 text-center">
+          <div class="bg-base-200 p-4 rounded-full mb-4">
+            <i
+              class="fa-solid fa-user-doctor text-base-content/50 text-3xl"
+            ></i>
+          </div>
+          <h3 class="font-medium text-lg mb-2">No hay pacientes en atención</h3>
+          <p class="text-base-content/70 max-w-md">
+            Actualmente no hay pacientes siendo atendidos por los médicos.
+          </p>
+        </div>
+        } @else {
+        <div class="p-4">
+          <app-table-appointment [appointments]="appointmentsInProgress()" />
+        </div>
+        }
+      </div>
+    </div>
+
+    <div
+      class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow duration-300 rounded-xl overflow-hidden border border-base-200 block"
+    >
+      <div class="card-body p-0">
+        <div class="bg-gradient-to-r from-success/10 to-success/5 p-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-success/20 p-2 rounded-lg">
+              <i class="fa-solid fa-check-circle text-success text-xl"></i>
+            </div>
+            <h2 class="card-title text-success font-bold">Citas completadas</h2>
+          </div>
+        </div>
+
+        @if (loading()) {
+        <div class="flex justify-center items-center p-12">
+          <div class="flex flex-col items-center gap-3">
+            <span
+              class="loading loading-spinner loading-lg text-success"
+            ></span>
+            <p class="text-sm text-base-content/70">Cargando citas...</p>
+          </div>
+        </div>
+        } @else if(errors()) {
+        <div class="p-4">
+          <error-request-component />
+        </div>
+        } @else if(appointmentsCompleted().length === 0) {
+        <div class="flex flex-col items-center justify-center p-12 text-center">
+          <div class="bg-base-200 p-4 rounded-full mb-4">
+            <i
+              class="fa-solid fa-clipboard-check text-base-content/50 text-3xl"
+            ></i>
+          </div>
+          <h3 class="font-medium text-lg mb-2">No hay citas completadas</h3>
+          <p class="text-base-content/70 max-w-md">
+            Aún no se han completado citas médicas hoy.
+          </p>
+        </div>
+        } @else {
+        <div class="p-4">
+          <app-table-appointment
+            [appointments]="appointmentsCompleted().slice(-5)"
+          />
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  } @if ( isOpenModalCreateAppointment() ) {
+  <create-appointment-component
+    (close)="isOpenModalCreateAppointment.set($event)"
+  />
+  }
+</section>

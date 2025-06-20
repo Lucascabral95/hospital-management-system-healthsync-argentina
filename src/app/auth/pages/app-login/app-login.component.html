@@ -1,0 +1,92 @@
+<section
+  class="w-full h-screen flex flex-col justify-center items-center p-4 fixed bg-violet-900 bg-[url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover bg-center bg-no-repeat"
+>
+  <div class="w-full max-w-[446px] h-fit z-10">
+    <div
+      class="w-full p-6 sm:p-8 rounded-2xl shadow-2xl border border-white/30 bg-white/60 backdrop-blur-xl"
+    >
+      <div class="flex flex-col mb-3">
+        <h2 class="text-xl font-bold text-center">Inicio de sesión</h2>
+        <p class="text-sm text-center text-gray-500 mt-1">
+          Ingresá tu información para iniciar sesión
+        </p>
+      </div>
+      <div class="flex flex-col">
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+          <div class="flex flex-col my-2 sm:my-4">
+            <label for="email" class="mb-2 text-sm font-medium">Email</label>
+            <input
+              formControlName="email"
+              type="email"
+              class="input w-full text-sm"
+              placeholder="Ejemplo@hotmail.com"
+              [class.input-error]="
+                formUtils.isValidField(myForm, 'email') || errorRequest()!
+              "
+              [class.bg-red-100]="
+                formUtils.isValidField(myForm, 'email') || errorRequest()!
+              "
+            />
+            @if ( formUtils.isValidField(myForm, 'email') ) {
+            <p class="text-xs text-red-600 mt-[4px]">
+              {{ formUtils.getFieldError(myForm, "email") }}
+            </p>
+            }
+          </div>
+          <div class="flex flex-col my-2 sm:my-4">
+            <label for="password" class="mb-2 text-sm font-medium"
+              >Password</label
+            >
+            <input
+              formControlName="password"
+              type="password"
+              class="input w-full text-sm"
+              placeholder="********"
+              [class.input-error]="
+                formUtils.isValidField(myForm, 'password') || errorRequest()!
+              "
+              [class.bg-red-100]="
+                formUtils.isValidField(myForm, 'password') || errorRequest()!
+              "
+            />
+            @if ( formUtils.isValidField(myForm, 'password') ) {
+            <p class="text-xs text-red-600 mt-[4px]">
+              {{ formUtils.getFieldError(myForm, "password") }}
+            </p>
+            }
+          </div>
+
+          @if ( errorRequest()! ) {
+          <div class="my-2 sm:my-6 text-center">
+            <p class="text-sm text-red-600">
+              {{ errorRequest()!.message || "Error en el inicio de sesión" }}
+            </p>
+          </div>
+          }
+
+          <div class="mt-2 sm:mt-4 mb-3">
+            <button
+              type="submit"
+              class="btn btn-neutral w-full"
+              [disabled]="loadingRequest()"
+            >
+              Iniciar sesión
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="mt-2">
+        <span class="text-sm text-neutral text-center block">
+          ¿No tenés una cuenta todavía?
+          <a
+            routerLink="/auth/register"
+            class="underline hover:text-primary cursor-pointer"
+          >
+            Registrate
+          </a>
+        </span>
+      </div>
+    </div>
+  </div>
+  <toast-component [toast]="toastStatusCode()" />
+</section>

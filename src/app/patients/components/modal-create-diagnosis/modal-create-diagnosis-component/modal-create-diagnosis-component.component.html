@@ -1,0 +1,130 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 sm:px-4"
+>
+  <div
+    class="w-full max-w-lg sm:w-2/3 md:w-1/2 bg-base-200 rounded-3xl p-6 sm:p-8 shadow-2xl animate-fade-in max-h-[80vh] overflow-y-auto"
+  >
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center rounded-full border-2 border-primary bg-primary/10 shadow"
+        >
+          <i
+            class="fa-solid fa-stethoscope text-xl sm:text-2xl text-primary"
+          ></i>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-bold text-base-content">
+          Crear diagnóstico
+        </h1>
+      </div>
+      <button
+        type="button"
+        class="btn btn-ghost btn-circle"
+        (click)="closeModal(false)"
+      >
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+    <form [formGroup]="myForm" (ngSubmit)="createDiagnosis()" class="space-y-6">
+      <div class="grid grid-cols-1 gap-4 sm:gap-6">
+        <div>
+          <label class="label font-medium mb-1 text-sm sm:text-base"
+            >Paciente</label
+          >
+          <input
+            type="text"
+            class="input input-bordered w-full bg-base-100 cursor-not-allowed"
+            readonly
+            [disabled]="diagnosisCreated()"
+            [value]="
+              servicePatient.cachePatientsDetail.get(patientID()!.toString())
+                ?.name +
+              ' ' +
+              servicePatient.cachePatientsDetail.get(patientID()!.toString())
+                ?.last_name
+            "
+          />
+        </div>
+        <div>
+          <label class="label font-medium mb-1 text-sm sm:text-base"
+            >Motivo de la visita</label
+          >
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            [class.input-error]="
+              myForm.get('reasonForVisit')?.invalid &&
+              myForm.get('reasonForVisit')?.touched
+            "
+            [disabled]="diagnosisCreated()"
+            formControlName="reasonForVisit"
+            autocomplete="off"
+          />
+        </div>
+        <div>
+          <label class="label font-medium mb-1 text-sm sm:text-base"
+            >Diagnóstico</label
+          >
+          <textarea
+            name="diagnosis"
+            id="diagnosis"
+            class="textarea textarea-bordered w-full min-h-[100px]"
+            [class.textarea-error]="
+              myForm.get('diagnosis')?.invalid &&
+              myForm.get('diagnosis')?.touched
+            "
+            [disabled]="diagnosisCreated()"
+            formControlName="diagnosis"
+            autocomplete="off"
+            (keydown.enter)="$event.stopPropagation()"
+          ></textarea>
+        </div>
+        <div>
+          <label class="label font-medium mb-1 text-sm sm:text-base"
+            >Tratamiento</label
+          >
+          <textarea
+            name="treatment"
+            id="treatment"
+            class="textarea textarea-bordered w-full min-h-[100px]"
+            [class.textarea-error]="
+              myForm.get('treatment')?.invalid &&
+              myForm.get('treatment')?.touched
+            "
+            [disabled]="diagnosisCreated()"
+            formControlName="treatment"
+            autocomplete="off"
+            (keydown.enter)="$event.stopPropagation()"
+          ></textarea>
+        </div>
+      </div>
+      <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-4">
+        @if (!diagnosisCreated()) {
+        <button
+          type="button"
+          class="btn btn-neutral w-full sm:w-auto"
+          (click)="closeModal(false)"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary w-full sm:w-auto"
+          [disabled]="myForm.invalid"
+        >
+          Crear diagnóstico
+        </button>
+        } @else {
+        <button
+          type="button"
+          class="btn btn-success w-full sm:w-auto flex items-center gap-2"
+          disabled
+        >
+          <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+          Procesando...
+        </button>
+        }
+      </div>
+    </form>
+  </div>
+</div>

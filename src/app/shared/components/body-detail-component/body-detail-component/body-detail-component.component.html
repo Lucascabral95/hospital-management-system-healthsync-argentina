@@ -1,0 +1,293 @@
+<section class="w-full flex flex-col mt-2 sm:mt-6">
+  <div class="flex items-center gap-3 mb-2 sm:mb-6">
+    <div class="w-1 h-8 bg-primary rounded-full"></div>
+    <h2
+      class="text-xl sm:text-2xl text-center sm:text-left font-bold text-base-content"
+    >
+      {{ title() }}
+    </h2>
+  </div>
+
+  @if ( doctorOrPatient() === 'patient' ) {
+  <div
+    [class.hidden]="rolePersonal() === 'ADMIN'"
+    class="w-full flex justify-center items-center mt-4 mb-2"
+  >
+    <button
+      (click)="isOpenModalCreateDiagnosis.set(true)"
+      class="btn btn-primary mb-2 sm:mb-0 btn-sm sm:btn-md"
+    >
+      Agregar diagnóstico
+    </button>
+  </div>
+  }
+
+  <div class="flex flex-col sm:flex-row justify-between items-center mt-1 mb-4">
+    <label class="input w-full sm:w-2/4 sm:max-w-[520px] sm:min-w-[240px]">
+      <svg
+        class="h-[1em] opacity-50"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+      >
+        <g
+          stroke-linejoin="round"
+          stroke-linecap="round"
+          stroke-width="2.5"
+          fill="none"
+          stroke="currentColor"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </g>
+      </svg>
+      <input
+        type="search"
+        class="grow"
+        [placeholder]="
+          doctorOrPatient() === 'patient'
+            ? 'Buscar por diagnóstico o tratamiento'
+            : 'Buscar por nombre o apellido del paciente'
+        "
+        #search
+        (input)="onSearchInput($event)"
+      />
+      <kbd class="kbd kbd-sm">⌘</kbd>
+      <kbd class="kbd kbd-sm">K</kbd>
+    </label>
+    <select
+      class="select select-primary w-full sm:w-fit my-2 sm:my-0"
+      (change)="onChangeDiagnosis($event)"
+    >
+      <option disabled selected>Ordenar por</option>
+      <option value="asc">Más antiguos</option>
+      <option value="desc">Más recientes</option>
+    </select>
+  </div>
+
+  <!-- ------- -->
+  @if ( doctorOrPatient() === 'patient' ) {
+  <!-- ------- -->
+  @for (record of medicalRecordsForPatient(); track $index) {
+  <div class="w-full mb-4 sm:mb-6">
+    <div
+      class="w-full flex flex-col p-4 sm:p-5 rounded-xl border border-base-200 shadow-md bg-base-100 hover:shadow-lg transition-all duration-300"
+    >
+      <div
+        class="flex justify-between items-center border-b border-base-200 pb-3 mb-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="bg-primary/10 text-primary rounded-full w-10 h-10 flex items-center justify-center"
+          >
+            <i class="fa-solid fa-file-medical"></i>
+          </div>
+          <div>
+            <p class="text-base font-medium text-primary">Consulta médica</p>
+            <p class="text-xs text-base-content/60">
+              Ref: #{{ record.id || $index + 1 }}
+            </p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-medium text-base-content">
+            {{ record.createdAt | date : "dd/MM/yyyy" }}
+          </p>
+          <p class="text-xs text-base-content/60">
+            {{ record.createdAt | date : "HH:mm" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-4 mb-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-comment-medical text-primary/70"></i>
+            <span class="text-sm font-medium text-base-content/70"
+              >Motivo de la visita:</span
+            >
+          </div>
+          <p class="text-sm bg-base-200/30 p-3 rounded-lg text-base-content">
+            {{ record.reasonForVisit }}
+          </p>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-stethoscope text-primary/70"></i>
+            <span class="text-sm font-medium text-base-content/70"
+              >Diagnóstico:</span
+            >
+          </div>
+          <p
+            [innerHTML]="formatDiagnosis(record.diagnosis)"
+            class="text-sm bg-base-200/30 p-3 rounded-lg text-base-content"
+          ></p>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-pills text-primary/70"></i>
+            <span class="text-sm font-medium text-base-content/70"
+              >Tratamiento:</span
+            >
+          </div>
+          <p
+            [innerHTML]="formatDiagnosis(record.treatment)"
+            class="text-sm bg-base-200/30 p-3 rounded-lg text-base-content"
+          ></p>
+        </div>
+      </div>
+
+      <div
+        class="flex justify-between items-center pt-3 border-t border-base-200"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="bg-secondary/10 text-secondary rounded-full w-8 h-8 flex items-center justify-center"
+          >
+            <i class="fa-solid fa-user-doctor"></i>
+          </div>
+          <div>
+            <a
+              [routerLink]="['/doctors/detail']"
+              [queryParams]="{ id: record.Doctor.auth.id }"
+              class="text-sm font-medium hover:underline hover:text-primary"
+            >
+              {{ record.Doctor.auth.full_name }}
+            </a>
+            <p class="text-xs text-base-content/60">
+              {{ record.Doctor.specialty }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+  <!-- -------- -->
+  @empty {
+  <error-component-medical-records
+    [medicalErrors]="medicalRecordsForPatient()"
+    [medicalMessage]="'No se encontraron registros médicos del paciente'"
+  />
+  } }
+  <!-- -------- -->
+  @if ( doctorOrPatient() === 'doctor' ) {
+  <!-- ----- -->
+  @for (record of medicalRecordsForDoctor(); track $index) {
+  <div class="w-full mb-6">
+    <div
+      class="w-full flex flex-col p-5 rounded-xl border border-base-200 shadow-md bg-base-100 hover:shadow-lg transition-all duration-300"
+    >
+      <div
+        class="flex justify-between items-center border-b border-base-200 pb-3 mb-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="bg-primary/10 text-primary rounded-full w-10 h-10 flex items-center justify-center hover:scale-105"
+          >
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div>
+            <a
+              [routerLink]="['/patients/detail']"
+              [queryParams]="{ id: record.patientsId }"
+              class="text-base font-medium text-primary hover:underline hover:text-primary"
+            >
+              {{ record.Patients.name }} {{ record.Patients.last_name }}
+            </a>
+            <p class="text-xs text-base-content/60">
+              Ref: #{{ record.id || $index + 1 }}
+            </p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-medium text-base-content">
+            {{ record.createdAt | date : "dd/MM/yyyy" }}
+          </p>
+          <p class="text-xs text-base-content/60">
+            {{ record.createdAt | date : "HH:mm" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-4 mb-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-comment-medical text-primary/70"></i>
+            <span class="text-sm font-medium text-base-content/70"
+              >Motivo de la visita:</span
+            >
+          </div>
+          <p class="text-sm bg-base-200/30 p-3 rounded-lg text-base-content">
+            {{ record.reasonForVisit }}
+          </p>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-stethoscope text-primary/70"></i>
+            <span class="text-sm font-medium text-base-content/70"
+              >Diagnóstico:</span
+            >
+          </div>
+          <p
+            [innerHTML]="formatDiagnosis(record.diagnosis)"
+            class="text-sm bg-base-200/30 p-3 rounded-lg text-base-content"
+          ></p>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-pills text-primary/70"></i>
+            <span class="text-sm font-medium text-base-content/70"
+              >Tratamiento:</span
+            >
+          </div>
+          <p
+            [innerHTML]="formatDiagnosis(record.treatment)"
+            class="text-sm bg-base-200/30 p-3 rounded-lg text-base-content"
+          ></p>
+        </div>
+      </div>
+
+      <div
+        class="flex justify-between items-center pt-3 border-t border-base-200"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="bg-secondary/10 text-secondary rounded-full w-8 h-8 flex items-center justify-center"
+          >
+            <i class="fa-solid fa-user-doctor"></i>
+          </div>
+          <div>
+            <a
+              [routerLink]="['/patients/detail']"
+              [queryParams]="{ id: record.patientsId }"
+              class="text-sm font-medium hover:underline hover:text-primary"
+            >
+              {{ record.Doctor.auth.full_name }}
+            </a>
+            <p class="text-xs text-base-content/60">
+              {{ record.Doctor.specialty }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+  <!-- -------- -->
+  @empty {
+  <error-component-medical-records
+    [medicalErrors]="medicalRecordsForPatient()"
+    [medicalMessage]="'No se encontraron diagnósticos hechos por el doctor.'"
+  />
+  } }
+</section>
+
+@if (isOpenModalCreateDiagnosis()) {
+<modal-create-diagnosis-component
+  (close)="isOpenModalCreateDiagnosis.set($event)"
+/>
+}

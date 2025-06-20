@@ -1,0 +1,28 @@
+@if ( toast()!.message ) {
+
+<div class="toast toast-end">
+  <div
+    class="alert"
+    [class.alert-success]="
+      toast()!.codeStatus === 200 ||
+      toast()!.codeStatus === 201 ||
+      toast()!.codeStatus === 204 ||
+      toast()!.codeStatus === 206 ||
+      toast()!.codeStatus === 202
+    "
+    [class.alert-error]="
+      toast()!.codeStatus === 500 ||
+      toast()!.codeStatus === 400 ||
+      toast()!.codeStatus === 401 ||
+      toast()!.codeStatus === 403 ||
+      toast()!.codeStatus === 404 ||
+      toast()!.codeStatus === 422 ||
+      toast()!.codeStatus === 429 ||
+      toast()!.codeStatus === 409
+    "
+  >
+    <span> {{ toast()!.message }} </span>
+  </div>
+</div>
+
+}

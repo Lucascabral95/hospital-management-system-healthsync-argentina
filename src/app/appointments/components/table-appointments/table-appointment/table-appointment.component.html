@@ -1,0 +1,57 @@
+<div
+  class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100"
+>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Paciente</th>
+        <th>Especialidad</th>
+        <th>Horario</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (appointment of appointments() ?? []; track $index) {
+      <tr>
+        <td>
+          {{ appointment?.patient?.name }} {{ appointment?.patient?.last_name }}
+        </td>
+        <td>{{ appointment?.specialty }}</td>
+        <td>{{ appointment?.scheduledAt | date : "HH:mm:ss" }}</td>
+        <td>
+          <div
+            class="badge badge-sm badge-primary my-2"
+            [class.badge-warning]="appointment?.status === 'PENDING'"
+            [class.badge-primary]="appointment?.status === 'IN_PROGRESS'"
+            [class.badge-error]="appointment?.status === 'COMPLETED'"
+          >
+            {{
+              appointment?.status === "PENDING"
+                ? "Pendiente"
+                : appointment.status === "IN_PROGRESS"
+                ? "En progreso"
+                : "Completado"
+            }}
+          </div>
+        </td>
+        <td>
+          <button
+            (click)="
+              appointment.status === 'PENDING'
+                ? onUpdateStatusInProgress(appointment.id)
+                : onUpdateStatusCompleted(appointment.id)
+            "
+            class="btn btn-sm"
+            [class.btn-success]="appointment.status === 'PENDING'"
+            [class.btn-error]="appointment.status === 'IN_PROGRESS'"
+            [class.hidden]="appointment.status === 'COMPLETED'"
+          >
+            {{ appointment.status === "PENDING" ? "Atender" : "Finalizar" }}
+          </button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

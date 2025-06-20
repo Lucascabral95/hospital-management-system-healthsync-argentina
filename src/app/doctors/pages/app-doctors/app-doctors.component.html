@@ -1,0 +1,16 @@
+@if (doctorsArray.isLoading()) {
+<div class="flex justify-center p-8">
+  <span class="loading loading-spinner loading-lg text-primary"></span>
+</div>
+} @else if (doctorsArray.error()) {
+<error-request-component [message]="errorsDoctors()!.message" />
+} @else if (doctorsArray.hasValue()) {
+<table-doctors-component
+  (searchInput)="onSearch($event)"
+  [columsDoctors]="columnsDoctors()"
+  [doctors]="filtered()"
+  (filter)="onChange($event)"
+/>
+} @else {
+<p>No se encontraron doctores</p>
+}

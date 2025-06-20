@@ -1,0 +1,409 @@
+@if(serviceInterment.loadingIntermentById()) {
+<p>Cargando...</p>
+} @else if (serviceInterment.errorRequest()) {
+<p>
+  Error {{ serviceInterment.errorRequest()!.error.statusCode ?? 500 }}
+  {{
+    serviceInterment.errorRequest()!.error.message ?? "Internal Server Error"
+  }}
+</p>
+} @else {
+
+<section class="w-full flex flex-col items-center">
+  <div class="w-full pt-0 pb-2 px-2 sm:p-4 rounded-2xl">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center">
+        <h1 class="text-xl sm:text-2xl font-medium mb-2 sm:mb-4">
+          Detalle de internación
+        </h1>
+      </div>
+    </div>
+    <div class="flex mt-4 mb-6 w-full">
+      <div
+        class="flex flex-col sm:flex-row justify-between sm:items-center w-full"
+      >
+        <div class="flex items-center">
+          <div
+            class="w-16 h-16 sm:w-20 sm:h-20 flex justify-center items-center rounded-full border border-primary"
+          >
+            <i
+              class="fa-solid fa-bed-pulse text-xl sm:text-2xl text-primary"
+            ></i>
+          </div>
+          <div class="flex flex-col justify-center ml-2 sm:ml-3">
+            <p class="text-xl sm:text-2xl font-bold text-base-content">
+              Paciente {{ serviceInterment.intermentGetByID()!.patient.name }}
+              {{ serviceInterment.intermentGetByID()!.patient.last_name }}
+            </p>
+            <div
+              class="badge badge-sm mt-1"
+              [class.badge-success]="
+                serviceInterment.intermentGetByID()!.status === 'COMPLETED'
+              "
+              [class.badge-error]="
+                serviceInterment.intermentGetByID()!.status === 'IN_PROGRESS'
+              "
+              [class.badge-warning]="
+                serviceInterment.intermentGetByID()!.status === 'PENDING'
+              "
+            >
+              {{
+                serviceInterment.intermentGetByID()!.status === "COMPLETED"
+                  ? "Finalizado"
+                  : serviceInterment.intermentGetByID()!.status ===
+                    "IN_PROGRESS"
+                  ? "En curso"
+                  : "En espera"
+              }}
+            </div>
+            <span class="text-xs text-base-content/60 my-1 font-medium">
+              Fecha de ingreso:
+              {{
+                serviceInterment.intermentGetByID()?.createdAt
+                  | date : "dd/MM/yyyy/HH:mm"
+              }}
+            </span>
+          </div>
+        </div>
+        <div
+          class="flex justify-center sm:justify-between items-center mt-2 sm:mt-0"
+        >
+          @if ( serviceInterment.intermentGetByID()!.status !== 'COMPLETED' ) {
+          <button
+            (click)="clearPatient('COMPLETED')"
+            class="btn btn-success btn-sm sm:btn-md"
+          >
+            Dar de alta
+          </button>
+          } @else {
+          <div class="flex flex-col justify-center">
+            <button
+              (click)="clearPatient('PENDING')"
+              class="btn btn-error btn-sm sm:btn-md"
+            >
+              Dar de baja
+            </button>
+            @if ( serviceInterment.intermentGetByID()!.dischargeDate ) {
+            <div class="badge badge-success badge-sm mt-1">
+              Egreso:
+              {{
+                serviceInterment.intermentGetByID()?.dischargeDate
+                  | date : "dd/MM/yyyy/HH:mm"
+              }}
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <form
+      class="grid grid-cols-2 sm:grid-cols-2 gap-4 sm:gap-6 mt-3 mb-2 sm:mt-6 sm:mb-4"
+      [formGroup]="formInterments"
+      (ngSubmit)="onSubmitInterment()"
+    >
+      <div class="form-control col-span-2">
+        <label class="label">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-circle-check mr-2"></i>Información del
+            paciente
+          </span>
+        </label>
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-id-card mr-2"></i>Nombre completo
+          </span>
+        </label>
+        <input
+          readonly
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30 cursor-not-allowed"
+          [value]="
+            serviceInterment.intermentGetByID()!.patient.name +
+            ' ' +
+            serviceInterment.intermentGetByID()!.patient.last_name
+          "
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-id-card mr-2"></i>DNI
+          </span>
+        </label>
+        <input
+          readonly
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30 cursor-not-allowed"
+          [value]="serviceInterment.intermentGetByID()!.patient.dni"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-venus-mars mr-2"></i> Genero
+          </span>
+        </label>
+        <input
+          readonly
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30 cursor-not-allowed"
+          [value]="serviceInterment.intermentGetByID()!.patient.gender"
+        />
+      </div>
+
+      <div class="form-control flex flex-col">
+        <label for="status" class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            Estado de internación
+          </span>
+        </label>
+        <select
+          class="select select-bordered w-full focus:outline-primary cursor-not-allowed"
+          formControlName="status"
+          readonly
+        >
+          <option disabled selected>Seleccionar estado</option>
+          <option value="IN_PROGRESS">En curso</option>
+          <option value="PENDING">En espera</option>
+          <option value="COMPLETED">Finalizado</option>
+        </select>
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-stethoscope mr-2"></i> Fecha de ingreso
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30 cursor-not-allowed"
+          [value]="
+            serviceInterment.intermentGetByID()!.Diagnosis[0]?.date
+              | date : 'dd/MM/yyyy'
+          "
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-stethoscope mr-2"></i> Fecha de egreso
+          </span>
+        </label>
+        <input
+          type="text"
+          readonly
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30 cursor-not-allowed"
+          formControlName="dischargeDate"
+          [value]="
+            serviceInterment.intermentGetByID()!.dischargeDate
+              | date : 'dd/MM/yyyy'
+          "
+        />
+      </div>
+
+      @if ( isVisibleButtonInterments() ) {
+      <div class="w-full my-2 col-span-2 flex justify-end items-center">
+        <button class="btn btn-neutral" type="submit">
+          Editar internación
+        </button>
+      </div>
+      }
+    </form>
+
+    <form
+      class="form-control grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6 mt-3 mb-2 sm:mt-6 sm:mb-4"
+      [formGroup]="formDiagnosis"
+      (ngSubmit)="onSubmitDiagnosis()"
+    >
+      <div class="form-control col-span-2 my-2">
+        <label class="label">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-circle-check mr-2"></i>Informacion de la
+            internación
+          </span>
+        </label>
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-stethoscope mr-2"></i> Código de diagnóstico
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30 focus:outline-primary cursor-pointer"
+          formControlName="code"
+        />
+      </div>
+
+      <div class="form-control flex flex-col">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-stethoscope mr-2"></i> Categoria
+          </span>
+        </label>
+        <select
+          class="select select-bordered w-full focus:outline-primary cursor-pointer"
+          name="category"
+          id="category"
+          formControlName="category"
+        >
+          <option disabled selected>Seleccionar categoria</option>
+          <option value="ADMISSION">Ingreso</option>
+          <option value="SECONDARY">Secundario</option>
+          <option value="COMPLICATION">Complicación</option>
+          <option value="COMORBIDITY">Comorbilidad</option>
+          <option value="DISCHARGE">Alta</option>
+        </select>
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-stethoscope mr-2"></i> Fecha de ingreso
+          </span>
+        </label>
+        <input
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30 cursor-not-allowed"
+          [value]="
+            serviceInterment.intermentGetByID()!.Diagnosis[0]?.date
+              | date : 'dd/MM/yyyy'
+          "
+          readonly
+        />
+      </div>
+
+      <div class="form-control col-span-2">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-stethoscope mr-2"></i> Diagnostico
+          </span>
+        </label>
+        <textarea
+          class="textarea textarea-bordered h-24 w-full focus:outline-primary cursor-pointer"
+          formControlName="description"
+        ></textarea>
+      </div>
+
+      @if ( isVisibleButtonDiagnosis() ) {
+      <div class="w-full my-2 col-span-2 flex justify-end items-center">
+        <button class="btn btn-neutral" type="submit">
+          Editar diagnostico
+        </button>
+      </div>
+      }
+    </form>
+    <div class="divider"></div>
+  </div>
+
+  <!-- record of diagnosis -->
+
+  <div class="w-full mb-4 sm:mb-0">
+    <div class="flex flex-col sm:flex-row justify-between items-center">
+      <div>
+        <h1
+          class="text-xl sm:text-2xl text-center sm:text-left font-medium mb-4 sm:mb-4"
+        >
+          Historial de diagnósticos de internación
+        </h1>
+      </div>
+      <div class="flex items-center mb-4 sm:mb-0">
+        <button
+          (click)="isOpenModalAddDiagnosis.set(true)"
+          class="btn btn-primary btn-sm sm:btn-md"
+        >
+          Agregar diagnóstico
+        </button>
+      </div>
+    </div>
+    <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      @for (diagnosi of serviceInterment.intermentGetByID()!.Diagnosis; track
+      $index) {
+      <div
+        class="w-full rounded-2xl p-4 my-0 sm:my-2 border border-base-200 shadow-md bg-base-100"
+      >
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex items-center">
+            <div
+              class="badge badge-primary badge-sm sm:badge-md flex items-center max-w-[210px] sm:max-w-fit overflow-x-auto whitespace-nowrap"
+            >
+              <i class="fa-solid fa-user mr-1"></i>
+              {{ serviceInterment.intermentGetByID()!.patient.name }}
+              {{ serviceInterment.intermentGetByID()!.patient.last_name }}
+            </div>
+          </div>
+          <div class="flex items-center">
+            <p class="text-xs sm:text-sm text-base-content/60">
+              {{ diagnosi.date | date : "dd/MM/yyyy:HH:mm" }}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center my-3 sm:my-0">
+          <p class="text-xs sm:text-sm text-base-content/80 font-sans">
+            {{ diagnosi.description }}
+          </p>
+        </div>
+
+        <div class="flex justify-between items-center mt-2">
+          <div class="badge badge-sm sm:badge-md">
+            <a
+              [routerLink]="['/doctors/detail']"
+              [queryParams]="{
+                id: serviceInterment.intermentGetByID()!.doctor?.id
+              }"
+              class="cursor-pointer"
+            >
+              <i class="fa-solid fa-user-doctor"></i>
+              {{ serviceInterment.intermentGetByID()!.doctor?.auth?.full_name }}
+            </a>
+          </div>
+          <div>
+            <div
+              class="badge badge-sm sm:badge-md"
+              [class.badge-primary]="diagnosi.category === 'ADMISSION'"
+              [class.badge-secondary]="diagnosi.category === 'SECONDARY'"
+              [class.badge-accent]="diagnosi.category === 'COMPLICATION'"
+              [class.badge-info]="diagnosi.category === 'COMORBIDITY'"
+              [class.badge-success]="diagnosi.category === 'DISCHARGE'"
+            >
+              {{
+                diagnosi.category === "ADMISSION"
+                  ? "Ingreso"
+                  : diagnosi.category === "SECONDARY"
+                  ? "Secundario"
+                  : diagnosi.category === "COMPLICATION"
+                  ? "Complicación"
+                  : diagnosi.category === "COMORBIDITY"
+                  ? "Comorbilidad"
+                  : "Alta"
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <toast-component [toast]="toastStatusCode()" />
+
+  @if ( isOpenModalAddDiagnosis() ) {
+  <app-modal-add-diagnosis
+    [intermentID]="appointmentID()!"
+    (close)="isOpenModalAddDiagnosis.set($event)"
+  />
+  }
+</section>
+
+}

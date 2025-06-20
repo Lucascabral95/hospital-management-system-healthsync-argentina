@@ -1,0 +1,170 @@
+@if( isLoading() ) {
+<p>Cargando...</p>
+<!-- ----- -->
+}
+
+<!-- ------ -->
+@if ( !isLoading() && !errorRequest() ) {
+
+<section class="w-full flex flex-col items-center">
+  <div class="w-full pt-0 pb-4 px-2 sm:p-4 rounded-2xl">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center">
+        <h1 class="text-xl sm:text-2xl font-medium mb-2 sm:mb-4">
+          Información personal
+        </h1>
+      </div>
+      <div
+        class="flex items-center"
+        [class.hidden]="myRolePersonal() === 'DOCTOR'"
+        (click)="isOpenModal.set(true)"
+      >
+        <button class="btn btn-primary hidden sm:block">Editar datos</button>
+        <button class="btn btn-primary btn-xs block sm:hidden">
+          <i class="fa-solid fa-pen"> </i>
+        </button>
+      </div>
+    </div>
+    <div class="flex mt-4 mb-6 sm:mb-8">
+      <div
+        class="w-16 h-16 sm:w-20 sm:h-20 flex justify-center items-center rounded-full border border-primary"
+      >
+        <i class="fa-solid fa-user-doctor text-xl sm:text-2xl text-primary"></i>
+      </div>
+      <div class="flex flex-col justify-center ml-2 sm:ml-3">
+        <p class="text-xl sm:text-2xl font-bold text-base-content">
+          {{ doctorDetail()?.role === "DOCTOR" ? "Dr/a" : "Administrador" }}
+          {{ doctorDetail()?.full_name }}
+        </p>
+        <div class="badge badge-primary badge-sm mt-1">
+          {{ doctorDetail()?.role === "DOCTOR" ? "Doctor" : "Administrador" }} |
+          {{ doctorDetail()!.Doctor[0]?.licenceNumber }}
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <form class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-6 mb-4">
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-id-card mr-2"></i>Nombre completo
+          </span>
+        </label>
+        <input
+          readonly
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="doctorDetail()!.full_name"
+        />
+      </div>
+
+      @if ( doctorDetail()?.role === 'DOCTOR' ) {
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-stethoscope mr-2"></i>Especialidad
+          </span>
+        </label>
+        <input
+          readonly
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="doctorDetail()!.Doctor[0]?.specialty"
+        />
+      </div>
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-file-certificate mr-2"></i>Número de
+            licenciaaaaa
+          </span>
+        </label>
+        <input
+          readonly
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="doctorDetail()!.Doctor[0]!.licenceNumber || 'Sin licencia'"
+        />
+      </div>
+
+      }
+
+      <div class="form-control">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-briefcase-medical mr-2"></i>Rol
+          </span>
+        </label>
+        <input
+          readonly
+          type="text"
+          class="input input-bordered w-full bg-base-100 focus:ring-accent/30"
+          [value]="doctorDetail()!.role"
+        />
+      </div>
+
+      <div class="form-control sm:col-span-2">
+        <label class="label text-sm sm:text-base">
+          <span class="label-text text-base-content font-medium mb-2">
+            <i class="fa-solid fa-circle-check mr-2"></i>Estado profesional
+          </span>
+        </label>
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input
+              disabled
+              type="checkbox"
+              class="toggle toggle-primary"
+              [checked]="doctorDetail()!.is_active"
+            />
+            <span class="text-base font-medium text-base-content"
+              >Actualmente
+              {{ doctorDetail()!.is_active ? "Activo" : "Inactivo" }}
+            </span>
+          </label>
+          <span class="badge badge-success gap-2 px-4 py-2">
+            <i class="fa-solid fa-check-circle"></i> En ejercicio
+          </span>
+        </div>
+      </div>
+    </form>
+    <div class="divider"></div>
+  </div>
+  @if (isOpenModal()) {
+
+  <modal-patch-doctor-component
+    [isIDDoctor]="doctorId()!"
+    (close)="isOpenModal.set($event)"
+  />
+
+  }
+</section>
+
+<app-medical-records-doctor-component [doctorId]="doctorId()!" />
+
+}
+
+<!-- ------ -->
+@if (errorRequest()) {
+<!-- ---- -->
+@switch (errorRequest()?.status) { @case (0) {
+<error-request-component [messageInterno]="true" />
+} @case (500) {
+<error-request-component [messageInterno]="true" />
+} @case (404) {
+<error-request-component
+  [message]="errorRequest()!.error.message ?? 'Recurso no encontrado'"
+/>
+} @case (400) {
+<error-request-component [message]="'Recurso no encontrado'" />
+} @default {
+<div class="max-w-md mx-auto my-8 p-6 bg-base-200 rounded-lg shadow-lg">
+  <h2 class="text-xl font-semibold text-error mb-4">
+    Error {{ errorRequest()?.status }}
+  </h2>
+  <p class="text-base-content mb-4">
+    {{ errorRequest()?.error.message ?? "Ha ocurrido un error inesperado" }}
+  </p>
+</div>
+} } }

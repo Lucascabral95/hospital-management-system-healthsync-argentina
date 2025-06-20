@@ -1,0 +1,180 @@
+<div class="flex h-screen">
+  <aside
+    class="hidden sm:flex flex-col w-64 h-screen px-5 py-8 overflow-y-auto bg-base-200 border-r border-base-300 rtl:border-r-0 rtl:border-l text-base-content"
+  >
+    <div class="flex items-center">
+      <a href="#">
+        <img
+          class="w-auto h-7"
+          src="https://merakiui.com/images/logo.svg"
+          alt="Logo de Meraki UI"
+        />
+      </a>
+      <h1 class="font-bold text-primary text-2xl ml-2">HealthSync</h1>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="flex flex-col justify-between flex-1">
+      <nav class="flex-1 -mx-3 space-y-3">
+        @for (section of sections; track $index) {
+        <a
+          [routerLink]="section.route"
+          [routerLinkActive]="'bg-base-300'"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center px-3 py-2 transition-colors duration-300 transform rounded-lg hover:bg-base-300"
+          [class.hidden]="!isAdmin() && section.label === 'Admin'"
+        >
+          <i class="{{ section.icon }}"> </i>
+          <span class="mx-2 text-sm font-medium"> {{ section.label }} </span>
+        </a>
+        }
+      </nav>
+
+      <div class="mt-8 flex items-center justify-between">
+        <label
+          class="btn btn-circle swap swap-rotate"
+          (click)="toggleDarkMode()"
+        >
+          @if (!darkMode()) {
+          <i class="fa-solid fa-moon text-xl"></i>
+          } @else {
+          <i class="fa-regular fa-sun text-xl"></i>
+          }
+        </label>
+
+        <button
+          class="flex items-center gap-2 px-4 py-2 btn btn-primary text-white rounded-lg shadow transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          type="button"
+          (click)="logout()"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="flex-1 flex flex-col h-screen overflow-hidden">
+    <header
+      class="sm:hidden bg-base-200 px-4 py-3 flex items-center justify-between shadow-md"
+    >
+      <div class="flex items-center">
+        <a [routerLink]="['/patients']">
+          <img
+            class="w-auto h-6"
+            src="https://merakiui.com/images/logo.svg"
+            alt="Logo de Meraki UI"
+          />
+        </a>
+        <h1 class="font-bold text-primary text-lg ml-2">HealthSync</h1>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <label
+          (click)="isOpenSearch.set(true)"
+          class="btn btn-sm btn-circle swap swap-rotate"
+        >
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </label>
+
+        <label
+          class="btn btn-sm btn-circle swap swap-rotate"
+          (click)="toggleDarkMode()"
+        >
+          @if (!darkMode()) {
+          <i class="fa-solid fa-moon text-sm"></i>
+          } @else {
+          <i class="fa-regular fa-sun text-sm"></i>
+          }
+        </label>
+
+        <button
+          class="btn btn-sm btn-ghost"
+          (click)="menuOpen.set(!menuOpen())"
+        >
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto">
+      <div class="sm:py-4 sm:px-6 p-3">
+        <search-nav-component />
+      </div>
+
+      <div class="sm:px-6 px-4 pb-16 sm:pb-4">
+        <router-outlet />
+      </div>
+    </div>
+
+    <nav
+      class="sm:hidden fixed bottom-0 left-0 right-0 bg-base-200 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] flex justify-around items-center h-14 z-30"
+    >
+      @for (section of sections.slice(0, 5); track $index) {
+      <a
+        [routerLink]="section.route"
+        [routerLinkActive]="'text-primary'"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex flex-col items-center justify-center h-full px-3"
+        [class.hidden]="!isAdmin() && section.label === 'Admin'"
+      >
+        <i class="{{ section.icon }} text-lg"></i>
+        <span class="text-xs mt-1">{{ section.label }}</span>
+      </a>
+      }
+    </nav>
+  </div>
+</div>
+
+<div
+  class="fixed inset-0 bg-base-100/60 backdrop-blur-sm z-40 transition-opacity duration-300 sm:hidden"
+  [class.hidden]="!menuOpen()"
+  [class.opacity-0]="!menuOpen()"
+  [class.opacity-100]="menuOpen()"
+  (click)="menuOpen.set(false)"
+></div>
+
+<div
+  class="fixed top-0 right-0 h-full w-64 bg-base-200 z-50 transform transition-transform duration-300 shadow-xl sm:hidden"
+  [class.translate-x-0]="menuOpen()"
+  [class.translate-x-full]="!menuOpen()"
+>
+  <div class="p-4 flex justify-between items-center border-b border-base-300">
+    <h2 class="font-bold text-lg">Menú</h2>
+    <button class="btn btn-sm btn-ghost" (click)="menuOpen.set(false)">
+      <i class="fa-solid fa-xmark text-lg"></i>
+    </button>
+  </div>
+
+  <nav class="p-4 space-y-2">
+    @for (section of sections; track $index) {
+    <a
+      [routerLink]="section.route"
+      [routerLinkActive]="'bg-base-300'"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flex items-center px-3 py-2 transition-colors duration-300 transform rounded-lg hover:bg-base-300"
+      [class.hidden]="!isAdmin() && section.label === 'Admin'"
+      (click)="menuOpen.set(false)"
+    >
+      <i class="{{ section.icon }}"></i>
+      <span class="mx-2 text-sm font-medium">{{ section.label }}</span>
+    </a>
+    }
+
+    <div class="border-t border-base-300 mt-4 pt-4">
+      <button
+        class="w-full flex items-center justify-center gap-2 px-4 py-2 btn btn-primary text-white rounded-lg shadow"
+        type="button"
+        (click)="logout()"
+      >
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </nav>
+</div>
+
+@if ( isOpenSearch() ) {
+<modal-search-component (searchModal)="isOpenSearch.set($event)" />
+}

@@ -1,0 +1,205 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+>
+  <div
+    class="w-full sm:w-[90%] md:w-[80%] lg:w-[70%] xl:w-[60%] max-w-4xl bg-base-200 rounded-2xl p-4 sm:p-6 shadow-xl animate-fade-in animate-duration-300 max-h-[90vh] overflow-y-auto"
+  >
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center">
+        <div class="w-1.5 h-8 bg-primary rounded-full mr-3"></div>
+        <h1 class="text-xl sm:text-2xl font-bold">Crear internación</h1>
+      </div>
+      <button
+        class="btn btn-circle btn-sm btn-ghost"
+        (click)="onClose(false)"
+        [class.hidden]="successRequest()"
+        type="button"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      *ngIf="successRequest()"
+      class="w-full bg-success/20 rounded-lg p-4 mb-6 flex items-center"
+    >
+      <div
+        class="w-8 h-8 rounded-full bg-success flex items-center justify-center mr-3"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-success-content"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <span class="font-medium text-success"
+        >Diagnóstico creado exitosamente</span
+      >
+    </div>
+
+    <form
+      [formGroup]="addFormDiagnosis"
+      (ngSubmit)="addDiagnosis()"
+      class="space-y-6"
+    >
+      <div class="mb-4">
+        <h2 class="text-base sm:text-lg font-semibold mb-3 text-primary">
+          Información de internación
+        </h2>
+        <div class="divider my-0"></div>
+      </div>
+
+      <div class="form-control grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div class="control">
+          <label
+            for="code"
+            class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1.5 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 17v-2a4 4 0 014-4h3"
+              />
+            </svg>
+            Código de internación
+          </label>
+          <input
+            type="text"
+            class="input input-bordered w-full focus:border-primary"
+            formControlName="code"
+            placeholder="Ej: INT-1234"
+            [class.input-success]="successRequest()"
+            [class.input-error]="
+              addFormDiagnosis.get('code')?.invalid &&
+              addFormDiagnosis.get('code')?.touched
+            "
+          />
+        </div>
+
+        <div class="control">
+          <label
+            for="category"
+            class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1.5 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 7h18M3 12h18M3 17h18"
+              />
+            </svg>
+            Categoría de internación
+          </label>
+          <select
+            name="category"
+            id="category"
+            class="select select-bordered w-full focus:border-primary"
+            [class.select-error]="
+              addFormDiagnosis.get('category')?.invalid &&
+              addFormDiagnosis.get('category')?.touched
+            "
+            [class.select-success]="successRequest()"
+            formControlName="category"
+          >
+            <option value="" disabled selected>Seleccionar categoría</option>
+            <option value="ADMISSION">Ingreso</option>
+            <option value="SECONDARY">Secundario</option>
+            <option value="COMPLICATION">Complicación</option>
+            <option value="COMORBIDITY">Comorbilidad</option>
+            <option value="DISCHARGE">Alta</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="control">
+        <label
+          for="description"
+          class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 mr-1.5 text-primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Descripción
+        </label>
+        <textarea
+          name="description"
+          id="description"
+          class="textarea textarea-bordered w-full focus:border-primary"
+          formControlName="description"
+          placeholder="Agregue una descripción..."
+          [class.textarea-success]="successRequest()"
+          [class.textarea-error]="
+            addFormDiagnosis.get('description')?.invalid &&
+            addFormDiagnosis.get('description')?.touched
+          "
+        ></textarea>
+      </div>
+
+      <div class="flex justify-end mt-6">
+        <button
+          class="btn btn-neutral mr-2"
+          (click)="onClose(false)"
+          type="button"
+          [class.hidden]="successRequest()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="addFormDiagnosis.invalid"
+          [class.btn-success]="successRequest()"
+          [class.w-full]="successRequest()"
+        >
+          {{ successRequest() ? "Diagnóstico creado" : "Crear internación" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

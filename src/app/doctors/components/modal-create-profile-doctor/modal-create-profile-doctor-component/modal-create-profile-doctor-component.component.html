@@ -1,0 +1,135 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+>
+  <div
+    class="w-full sm:w-[90%] md:w-[80%] lg:w-[70%] xl:w-[60%] max-w-4xl bg-base-200 rounded-2xl p-4 sm:p-6 shadow-xl animate-fade-in animate-duration-300 max-h-[90vh] overflow-y-auto"
+  >
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex items-center">
+        <div class="w-1.5 h-8 bg-primary rounded-full mr-3"></div>
+        <h1 class="text-xl sm:text-2xl font-bold">Crear Doctor</h1>
+      </div>
+      <button
+        class="btn btn-circle btn-sm btn-ghost"
+        (click)="closeModal(false)"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <div class="form-control grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div class="control">
+          <label
+            for="licenceNumber"
+            class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1.5 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            Número de matrícula
+          </label>
+          <input
+            [class.input-error]="
+              myForm.get('licenceNumber')?.invalid &&
+              myForm.get('licenceNumber')?.touched
+            "
+            type="text"
+            class="input input-bordered w-full focus:border-primary"
+            formControlName="licenceNumber"
+            placeholder="Ingrese su número de matrícula"
+          />
+        </div>
+        <div class="control">
+          <label
+            for="specialty"
+            class="fieldset-legend text-sm font-medium flex items-center mb-1.5"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 mr-1.5 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1110.894-3.74l4.243 4.243z"
+              />
+            </svg>
+            Especialidad
+          </label>
+          <input
+            type="text"
+            class="input input-bordered w-full focus:border-primary"
+            formControlName="specialty"
+            placeholder="Médico clínico"
+            [class.input-error]="
+              myForm.get('specialty')?.invalid &&
+              myForm.get('specialty')?.touched
+            "
+            [class.input-error]="
+              errorRequest()?.message === 'User already exists'
+            "
+          />
+        </div>
+      </div>
+      @if ( errorRequest() ) {
+      <div class="my-4">
+        <p class="text-center text-red-500 font-medium">
+          {{ errorRequest()!.message }}
+        </p>
+      </div>
+      }
+      <div class="flex justify-end mt-6">
+        <button
+          [class.hidden]="!loadingRequest()"
+          class="btn btn-success w-full"
+        >
+          <span class="loading loading-spinner"></span>
+        </button>
+        <button
+          class="btn btn-neutral mr-2"
+          (click)="closeModal(false)"
+          type="button"
+          [class.hidden]="loadingRequest()"
+        >
+          Cancelar
+        </button>
+        <button
+          [class.hidden]="loadingRequest()"
+          class="btn btn-primary"
+          type="submit"
+        >
+          Crear
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

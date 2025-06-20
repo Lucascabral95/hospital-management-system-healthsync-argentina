@@ -1,0 +1,47 @@
+<div
+  class="flex flex-col-reverse sm:flex-row justify-between items-center mt-2 sm:mt-0 mb-2 sm:mb-6"
+>
+  <label
+    class="input w-full sm:w-2/3 mb-2 sm:mb-0"
+    (click)="searchModal.set(true)"
+  >
+    <svg
+      class="h-[1em] opacity-50"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+    >
+      <g
+        stroke-linejoin="round"
+        stroke-linecap="round"
+        stroke-width="2.5"
+        fill="none"
+        stroke="currentColor"
+      >
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </g>
+    </svg>
+    <input type="search" class="grow" placeholder="Buscar..." />
+    <kbd class="kbd kbd-sm hidden sm:inline">⌘</kbd>
+    <kbd class="kbd kbd-sm hidden sm:inline">K</kbd>
+  </label>
+  <div
+    class="flex flex-col sm:pl-3 sm:border-l sm:border-l-gray-300 mb-2 sm:mb-0"
+  >
+    <p class="p-0 m-0 font-bold text-sm text-center sm:text-left">
+      {{ name()?.full_name }}
+    </p>
+    <p
+      class="p-0 m-0 text-center sm:text-left font-medium text-gray-500 text-xs"
+    >
+      {{ role()?.role }}
+    </p>
+  </div>
+</div>
+<div
+  class="w-full h-[1px] sm:h-[2px] bg-[#383A43] mb-2 sm:mb-6 mt-2 sm:mt-6"
+></div>
+
+@if (searchModal()) {
+<modal-search-component (searchModal)="searchModal.set($event)" />
+}
