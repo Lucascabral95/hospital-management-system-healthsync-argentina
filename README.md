@@ -22,6 +22,7 @@ Hospital Management System es una aplicación web moderna desarrollada con [Angu
 - **Autenticación y Autorización:** Acceso seguro con JWT y roles (ADMIN, DOCTOR, PATIENT).
 - **Paginación y Filtros:** Listados con paginación y filtros avanzados por nombre, especialidad, estado, etc.
 - **UI Moderna:** Interfaz responsiva con TailwindCSS y DaisyUI.
+- **Pruebas Unitarias:** Pruebas unitarias con Jasmine y Karma.
 
 ---
 
@@ -72,6 +73,12 @@ Hospital Management System es una aplicación web moderna desarrollada con [Angu
 
    ```bash
    ng serve
+   ```
+
+5. **Inicia el servidor de pruebas:**
+
+   ```bash
+   ng test
    ```
 
    Accede a la aplicación en `http://localhost:4200/`.

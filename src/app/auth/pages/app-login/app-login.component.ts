@@ -45,7 +45,6 @@ export default class AppLoginComponent {
           localStorage.setItem(TOKEN_LS_KEY, res.token);
           setTimeout(() => {
             this.toastStatusCode.set({ message: '', codeStatus: 200 })
-            // this.authService.router.navigate(['/patients']);
             this.authService.router.navigate(['/doctors/detail']);
           }, 1500);
         },

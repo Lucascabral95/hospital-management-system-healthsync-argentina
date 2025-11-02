@@ -11,7 +11,11 @@ import { Specialties } from '../interfaces/specialties.enum';
 export default class ServiceAppointments {
   http = inject(HttpClient)
   private patientsService = inject(PatientsService)
-  private socket = io(environment.webSocketUrl);
+  // private socket = io(environment.webSocketUrl);
+  private socket = io('wss://hospital-management-system-1-0-0.onrender.com', {
+    withCredentials: true,
+    transports: ['websocket'],
+  });
 
   appointmentsWebSocket = signal<GetAppointmentsDto[]>([])
   newAppointmentPatient = signal<Patient | null>(null)

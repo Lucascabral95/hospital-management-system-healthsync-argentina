@@ -61,7 +61,6 @@ export class PatientsService {
     this.cachePatients.clear()
   }
 
-  // -----
   cachePatientsDetail = new Map<string, PatientsByIDDto>()
 
   getPatientsById(id: number): Observable<PatientsByIDDto> {
@@ -89,7 +88,6 @@ export class PatientsService {
     }
   }
 
-  // --- add patient ---
   createPatient(patient: CreatePatientsDTO) {
     return this.http.post<ResponsePostPatientDto>(`${URL}/patients`, patient).pipe(
       tap(() => this.onClearPatientsCache()),
@@ -97,7 +95,6 @@ export class PatientsService {
     )
   }
 
-  // Find medical record by id of patient -----
   medicalRecordOfPatientCache = signal<GetMedicalRecordsPatientdByID[]>([])
 
   getMedicalRecordsPatientsById(id: number, order?: string) {
@@ -110,7 +107,6 @@ export class PatientsService {
     )
   }
 
-  // --- add diagnosis ---
   createDiagnosis(createDiagnosisDto: CreateDiagnosisDto) {
     return this.http.post<ResponseCreateDiagnosisDto>(`${URL}/medical-records`, createDiagnosisDto).pipe(
       tap(res => {
@@ -119,7 +115,6 @@ export class PatientsService {
     );
   }
 
-  // ---- get patietns select -----
   selectPatientsOptions = signal<SelectPatientsDto[]>([])
 
   getPatientsWithSelect(): Observable<SelectPatientsDto[]> {
@@ -128,14 +123,12 @@ export class PatientsService {
     )
   }
 
-  // ---- add diagnosis for patient -----
   addDiagnosisPatient(diagnosis: CreateDiagnosisDto) {
     return this.http.post<ResponseCreateDiagnosisDto>(`${URL}/medical-records`, diagnosis).pipe(
       tap(res => console.log(res)),
     )
   }
 
-  // ---- search patient for name or last name ----
   searchPatients = signal<GetPatientForNameLastNameDto[]>([])
 
   searchPatientsByNameOrLastName(patient: string): Observable<GetPatientForNameLastNameDto[]> {
@@ -146,7 +139,6 @@ export class PatientsService {
     })
   }
 
-  // --- patiensAppointments ---
   getDataPatientForAppointment(dni: string): Observable<GetDataPatientAppointmentDto> {
     return this.http.get<GetDataPatientAppointmentDto>(`${URL}/patients/dni/${dni}`)
   }
